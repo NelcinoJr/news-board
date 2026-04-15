@@ -20,4 +20,5 @@ Route::post('/api/categories', [CategoryController::class, 'store']);
 
 Route::get('/api/news', [NewsController::class, 'index']);
 Route::post('/api/news', [NewsController::class, 'store']);
+Route::post('/api/news/{id}', [NewsController::class, 'update']);
 Route::delete('/api/news/{id}', [NewsController::class, 'destroy']);

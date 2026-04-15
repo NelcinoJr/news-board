@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>G1 - O seu portal de notícias</title>
+    <title>Portal Investidor10</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Vue 3 -->
@@ -11,64 +11,77 @@
     <!-- Axios -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Open Sans', sans-serif; }
+        body { font-family: 'Roboto', sans-serif; }
+        h1, h2, h3, .brand { font-family: 'Montserrat', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-900">
+<body class="bg-slate-50 text-slate-900">
     
     <div id="app">
         <!-- Barra superior -->
-        <div class="bg-red-700 text-white py-3">
-            <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
-                <a href="/" class="text-3xl font-extrabold tracking-tighter">g1</a>
+        <div class="bg-emerald-800 text-white py-4 shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+                <a href="/" class="text-3xl font-extrabold tracking-tight brand flex items-center gap-2">
+                    <svg class="w-8 h-8 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"></path></svg>
+                    Investidor10
+                </a>
                 <div class="flex space-x-6 text-sm font-semibold">
-                    <a href="/" class="hover:underline">Últimas Notícias</a>
-                    <a href="/admin" class="hover:underline text-red-200">Painel Admin</a>
+                    <a href="/" class="hover:text-emerald-300 transition">Mercado</a>
+                    <a href="/admin" class="bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded-lg transition border border-emerald-500">Acessar Painel</a>
                 </div>
             </div>
         </div>
 
         <!-- Menu de Categorias -->
-        <div class="bg-red-600 text-white shadow-md">
-            <div class="max-w-6xl mx-auto px-4 flex space-x-6 overflow-x-auto py-3 text-sm font-bold uppercase tracking-wider">
-                <button @click="searchQuery = ''; fetchNews()" class="hover:text-red-200 transition whitespace-nowrap">Todas</button>
-                <button v-for="cat in categories" :key="cat.id" @click="searchQuery = cat.name; fetchNews()" class="hover:text-red-200 transition whitespace-nowrap">
+        <div class="bg-emerald-700 text-emerald-50 border-t border-emerald-600">
+            <div class="max-w-7xl mx-auto px-4 flex space-x-6 overflow-x-auto py-3 text-sm font-bold uppercase tracking-wider">
+                <button @click="searchQuery = ''; fetchNews()" class="hover:text-white transition whitespace-nowrap" :class="{'text-emerald-300': searchQuery === ''}">TODAS AS NOTÍCIAS</button>
+                <button v-for="cat in categories" :key="cat.id" @click="searchQuery = cat.name; fetchNews()" class="hover:text-white transition whitespace-nowrap" :class="{'text-emerald-300': searchQuery === cat.name}">
                     @{{ cat.name }}
                 </button>
             </div>
         </div>
 
-        <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="max-w-7xl mx-auto px-4 py-8">
             <!-- Destaque -->
             <div v-if="news.length > 0" class="mb-12">
-                <article class="relative group cursor-pointer rounded-xl overflow-hidden shadow-lg h-[500px]">
-                    <img v-if="news[0].image" :src="news[0].image" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-700">
-                    <div v-else class="absolute inset-0 w-full h-full bg-gray-800 flex justify-center items-center">
-                        <svg class="w-24 h-24 text-gray-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
+                <article class="relative group cursor-pointer rounded-2xl overflow-hidden shadow-2xl h-[550px]">
+                    <img v-if="news[0].image" :src="news[0].image" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-1000 ease-in-out">
+                    <div v-else class="absolute inset-0 w-full h-full bg-slate-800 flex justify-center items-center">
+                        <svg class="w-32 h-32 text-slate-700" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"></path></svg>
                     </div>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-                    <div class="absolute bottom-0 left-0 p-8">
-                        <span class="text-red-500 font-bold text-sm uppercase tracking-wider mb-2 block">@{{ news[0].category?.name }}</span>
-                        <h2 class="text-white text-4xl font-bold leading-tight mb-3 group-hover:underline">@{{ news[0].title }}</h2>
-                        <p class="text-gray-300 text-lg line-clamp-2">@{{ news[0].content }}</p>
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-10 w-full md:w-3/4">
+                        <span class="bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider px-3 py-1 rounded-full mb-4 inline-block">@{{ news[0].category?.name }}</span>
+                        <h2 class="text-white text-5xl font-extrabold leading-tight mb-4 group-hover:text-emerald-300 transition">@{{ news[0].title }}</h2>
+                        <p class="text-slate-300 text-lg line-clamp-2">@{{ news[0].content }}</p>
                     </div>
                 </article>
             </div>
 
-            <div v-if="isLoading" class="text-center py-20">Carregando...</div>
+            <div v-if="isLoading" class="flex justify-center py-20">
+                <svg class="animate-spin h-10 w-10 text-emerald-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            </div>
 
             <!-- Outras Notícias -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <article v-for="item in news.slice(1)" :key="item.id" class="group cursor-pointer">
-                    <div class="h-48 rounded-lg overflow-hidden mb-3 bg-gray-200">
-                        <img v-if="item.image" :src="item.image" class="w-full h-full object-cover group-hover:opacity-90 transition">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <article v-for="item in news.slice(1)" :key="item.id" class="group cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 overflow-hidden flex flex-col h-full">
+                    <div class="h-56 overflow-hidden bg-slate-100 relative">
+                        <img v-if="item.image" :src="item.image" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-slate-900/80 backdrop-blur text-white font-bold text-xs uppercase tracking-wider px-3 py-1 rounded-sm">@{{ item.category?.name }}</span>
+                        </div>
                     </div>
-                    <span class="text-red-600 font-bold text-xs uppercase mb-1 block">@{{ item.category?.name }}</span>
-                    <h3 class="text-xl font-bold text-gray-900 group-hover:text-red-700 transition leading-snug mb-2">@{{ item.title }}</h3>
-                    <p class="text-gray-600 text-sm line-clamp-3">@{{ item.content }}</p>
-                    <div class="mt-2 text-xs text-gray-400">@{{ new Date(item.created_at).toLocaleDateString('pt-BR') }}</div>
+                    <div class="p-6 flex flex-col flex-1">
+                        <h3 class="text-2xl font-bold text-slate-800 group-hover:text-emerald-700 transition leading-snug mb-3">@{{ item.title }}</h3>
+                        <p class="text-slate-600 text-sm line-clamp-3 mb-4 flex-1">@{{ item.content }}</p>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-semibold text-slate-400 uppercase tracking-wide">
+                            <span>MERCADO</span>
+                            <span>@{{ new Date(item.created_at).toLocaleDateString('pt-BR') }}</span>
+                        </div>
+                    </div>
                 </article>
             </div>
         </div>

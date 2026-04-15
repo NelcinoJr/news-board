@@ -69,10 +69,14 @@
                         <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-800">Nova Notícia</h2>
+                        <h2 class="text-2xl font-bold text-gray-800">@{{ editMode ? 'Editar Notícia' : 'Nova Notícia' }}</h2>
                     </div>
                     
                     <form @submit.prevent="saveNews" class="space-y-5">
+                        <div v-if="editMode" class="flex justify-between items-center mb-4">
+                            <span class="text-sm text-amber-600 font-semibold bg-amber-50 px-3 py-1 rounded-full">Modo de Edição</span>
+                            <button type="button" @click="cancelEdit" class="text-sm text-gray-500 hover:text-gray-700 underline">Cancelar Edição</button>
+                        </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Título da Notícia</label>
                             <input v-model="form.title" type="text" required class="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all">
@@ -107,8 +111,8 @@
                         </div>
 
                         <button type="submit" :disabled="isSubmitting" class="w-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-bold px-6 py-4 rounded-xl hover:from-indigo-700 hover:to-blue-700 focus:ring-4 focus:ring-indigo-300 transition-all transform active:scale-95 flex justify-center items-center gap-2">
-                            <span v-if="isSubmitting"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Publicando...</span>
-                            <span v-else>Publicar Notícia</span>
+                            <span v-if="isSubmitting"><svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Salvando...</span>
+                            <span v-else>@{{ editMode ? 'Salvar Alterações' : 'Publicar Notícia' }}</span>
                         </button>
                     </form>
                 </div>
@@ -166,10 +170,10 @@
                             <p class="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-3 flex-1">@{{ item.content }}</p>
                             
                             <div class="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-                                <div class="flex items-center text-xs text-gray-500 font-medium">
-                                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                    @{{ new Date(item.created_at).toLocaleDateString('pt-BR') }}
-                                </div>
+                                <button @click="editNews(item)" class="text-blue-500 hover:text-blue-700 text-sm font-semibold flex items-center transition-colors px-3 py-1 bg-blue-50 hover:bg-blue-100 rounded-lg">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                    Editar
+                                </button>
                                 <button @click="deleteNews(item.id)" class="text-red-500 hover:text-red-700 text-sm font-semibold flex items-center transition-colors px-3 py-1 bg-red-50 hover:bg-red-100 rounded-lg">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     Excluir
@@ -201,6 +205,8 @@
                 const newCategory = ref('');
                 const isLoading = ref(true);
                 const isSubmitting = ref(false);
+                const editMode = ref(false);
+                const editId = ref(null);
                 const imageFile = ref(null);
                 const imagePreview = ref(null);
                 const fileInput = ref(null);
@@ -255,10 +261,31 @@
                     }
                 };
 
+                const editNews = (item) => {
+                    editMode.value = true;
+                    editId.value = item.id;
+                    form.value = {
+                        title: item.title,
+                        content: item.content,
+                        category_id: item.category_id
+                    };
+                    imagePreview.value = item.image || null;
+                    imageFile.value = null;
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                };
+
+                const cancelEdit = () => {
+                    editMode.value = false;
+                    editId.value = null;
+                    form.value = { title: '', content: '', category_id: '' };
+                    imagePreview.value = null;
+                    imageFile.value = null;
+                    if(fileInput.value) fileInput.value.value = '';
+                };
+
                 const saveNews = async () => {
                     isSubmitting.value = true;
                     try {
-                        // Usando FormData por causa da imagem
                         const formData = new FormData();
                         formData.append('title', form.value.title);
                         formData.append('content', form.value.content);
@@ -267,17 +294,21 @@
                             formData.append('image', imageFile.value);
                         }
 
-                        await axios.post('/api/news', formData, {
-                            headers: { 'Content-Type': 'multipart/form-data' }
-                        });
+                        if (editMode.value) {
+                            // Method spoofing for PUT
+                            await axios.post(`/api/news/${editId.value}`, formData, {
+                                headers: { 'Content-Type': 'multipart/form-data' }
+                            });
+                            showToast('Notícia editada com sucesso!');
+                        } else {
+                            await axios.post('/api/news', formData, {
+                                headers: { 'Content-Type': 'multipart/form-data' }
+                            });
+                            showToast('Notícia publicada com sucesso!');
+                        }
                         
-                        form.value = { title: '', content: '', category_id: '' };
-                        imageFile.value = null;
-                        imagePreview.value = null;
-                        if(fileInput.value) fileInput.value.value = '';
-                        
+                        cancelEdit();
                         await fetchNews();
-                        showToast('Notícia publicada com sucesso!');
                     } catch (error) {
                         alert(error.response?.data?.message || 'Erro ao publicar notícia.');
                     } finally {
@@ -311,9 +342,13 @@
                     isSubmitting,
                     imagePreview,
                     fileInput,
+                    editMode,
+                    editId,
                     fetchNews,
                     saveCategory,
                     saveNews,
+                    editNews,
+                    cancelEdit,
                     deleteNews,
                     handleImageUpload
                 }
