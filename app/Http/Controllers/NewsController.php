@@ -28,10 +28,22 @@ class NewsController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('news_images', 'public');
+            $validated['image'] = '/storage/' . $path;
+        }
 
         $news = News::create($validated);
 
         return response()->json($news->load('category'), 201);
+    }
+
+    public function destroy($id)
+    {
+        News::destroy($id);
+        return response()->json(['message' => 'Deleted']);
     }
 }
