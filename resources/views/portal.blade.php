@@ -27,10 +27,6 @@
                     <svg class="w-8 h-8 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z" clip-rule="evenodd"></path></svg>
                     Investidor10
                 </a>
-                <div class="flex space-x-6 text-sm font-semibold">
-                    <a href="/" class="hover:text-emerald-300 transition">Mercado</a>
-                    <a href="/admin" class="bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded-lg transition border border-emerald-500">Acessar Painel</a>
-                </div>
             </div>
         </div>
 
